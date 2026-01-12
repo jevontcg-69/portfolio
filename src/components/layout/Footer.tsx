@@ -15,7 +15,7 @@ export function Footer() {
                         </p>
                     </div>
 
-                    <div className="flex space-x-6">
+                    <div className="flex items-center space-x-6">
                         <Link
                             href="https://github.com"
                             target="_blank"
@@ -35,11 +35,10 @@ export function Footer() {
                             <span className="sr-only">LinkedIn</span>
                         </Link>
                         <Link
-                            href="mailto:contact@example.com"
-                            className="text-muted-foreground hover:text-primary transition-colors"
+                            href="/login"
+                            className="text-muted-foreground hover:text-primary transition-colors text-sm font-medium"
                         >
-                            <Mail className="h-5 w-5" />
-                            <span className="sr-only">Email</span>
+                            Admin
                         </Link>
                     </div>
                 </div>

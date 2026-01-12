@@ -39,9 +39,9 @@ export function ProjectForm({ onClose, onSuccess }: ProjectFormProps) {
             if (error) throw error;
             onSuccess();
             onClose();
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error adding project:", error);
-            alert("Failed to add project. Check console.");
+            alert(`Failed to add project: ${error.message || "Unknown error"}`);
         } finally {
             setLoading(false);
         }
