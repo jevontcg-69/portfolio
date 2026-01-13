@@ -1,20 +1,54 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Mail, Linkedin, Github, Send } from "lucide-react";
+import { Mail, Linkedin, Github, Send, AlertCircle } from "lucide-react";
 import { useState } from "react";
 
 export function Contact() {
     const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+    const [errorMessage, setErrorMessage] = useState("");
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        const form = e.currentTarget;
         setStatus("sending");
+        setErrorMessage("");
 
-        // This is a placeholder for actual email logic (e.g., Formspree or a Server Action)
-        setTimeout(() => {
-            setStatus("sent");
-        }, 1500);
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        // Get the URL from env or use a fallback for testing
+        const formspreeUrl = process.env.NEXT_PUBLIC_FORMSPREE_URL;
+
+        if (!formspreeUrl || formspreeUrl.includes("your_id_here")) {
+            setStatus("error");
+            setErrorMessage("Formspree URL not configured. Please add NEXT_PUBLIC_FORMSPREE_URL to your .env.local file.");
+            return;
+        }
+
+        try {
+            const response = await fetch(formspreeUrl, {
+                method: "POST",
+                body: JSON.stringify(data),
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                setStatus("sent");
+                form.reset();
+            } else {
+                const result = await response.json();
+                setStatus("error");
+                setErrorMessage(result.error || "Failed to send message. Please try again.");
+            }
+        } catch (error) {
+            console.error("Contact form error:", error);
+            setStatus("error");
+            setErrorMessage("Something went wrong. Please check your internet connection.");
+        }
     };
 
     return (
@@ -87,6 +121,7 @@ export function Contact() {
                                     <label className="text-sm font-medium">Name</label>
                                     <input
                                         required
+                                        name="name"
                                         className="w-full h-10 px-3 rounded-md bg-background border border-border focus:ring-2 focus:ring-primary outline-none transition-all"
                                         placeholder="John Doe"
                                     />
@@ -95,6 +130,7 @@ export function Contact() {
                                     <label className="text-sm font-medium">Email</label>
                                     <input
                                         required
+                                        name="email"
                                         type="email"
                                         className="w-full h-10 px-3 rounded-md bg-background border border-border focus:ring-2 focus:ring-primary outline-none transition-all"
                                         placeholder="john@example.com"
@@ -105,6 +141,7 @@ export function Contact() {
                                 <label className="text-sm font-medium">Subject</label>
                                 <input
                                     required
+                                    name="subject"
                                     className="w-full h-10 px-3 rounded-md bg-background border border-border focus:ring-2 focus:ring-primary outline-none transition-all"
                                     placeholder="Collaboration Inquiry"
                                 />
@@ -113,11 +150,21 @@ export function Contact() {
                                 <label className="text-sm font-medium">Message</label>
                                 <textarea
                                     required
+                                    name="message"
                                     className="w-full h-32 p-3 rounded-md bg-background border border-border focus:ring-2 focus:ring-primary outline-none transition-all resize-none"
                                     placeholder="Tell me more about your project..."
                                 />
                             </div>
+
+                            {status === "error" && (
+                                <div className="flex items-center gap-2 text-destructive text-sm bg-destructive/10 p-3 rounded-md">
+                                    <AlertCircle className="h-4 w-4" />
+                                    <p>{errorMessage}</p>
+                                </div>
+                            )}
+
                             <button
+                                type="submit"
                                 disabled={status === "sending" || status === "sent"}
                                 className="w-full h-12 bg-primary text-primary-foreground rounded-lg font-semibold flex items-center justify-center transition-all hover:bg-primary/90 disabled:opacity-70"
                             >
@@ -132,8 +179,9 @@ export function Contact() {
                                     </>
                                 )}
                             </button>
+
                             {status === "sent" && (
-                                <p className="text-xs text-center text-green-500 mt-2">
+                                <p className="text-xs text-center text-green-500 mt-2 font-medium">
                                     Thank you! I'll get back to you soon.
                                 </p>
                             )}

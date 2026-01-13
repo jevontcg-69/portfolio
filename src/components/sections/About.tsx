@@ -54,7 +54,6 @@ export function About() {
                         </div>
                     </motion.div>
 
-                    {/* Image / Visual Placeholder */}
                     <motion.div
                         className="flex-1 w-full flex justify-center md:justify-end"
                         initial={{ opacity: 0, x: 20 }}
@@ -62,12 +61,13 @@ export function About() {
                         viewport={{ once: true }}
                         transition={{ duration: 0.5, delay: 0.2 }}
                     >
-                        <div className="relative w-72 h-72 md:w-96 md:h-96 rounded-2xl overflow-hidden shadow-2xl border-2 border-primary/20 bg-gradient-to-tr from-muted to-background">
-                            {/* Replace with actual image later */}
-                            <div className="absolute inset-0 flex items-center justify-center bg-muted">
-                                <span className="text-muted-foreground text-sm">Professional Headshot</span>
-                            </div>
-                            <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
+                        <div className="relative w-72 h-72 md:w-96 md:h-96 rounded-2xl overflow-hidden shadow-2xl border-2 border-primary/20">
+                            <img
+                                src="/headshot.png"
+                                alt="Hizkia Jevon Chandra - Professional Headshot"
+                                className="w-full h-full object-cover"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-background/20 to-transparent" />
                         </div>
                     </motion.div>
 

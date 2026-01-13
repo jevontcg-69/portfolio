@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
-import { Plus, LogOut, LayoutDashboard, FolderKanban, Award, Trash2 } from "lucide-react";
+import { Plus, LogOut, LayoutDashboard, FolderKanban, Award, Trash2, Edit2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ProjectForm } from "@/components/admin/ProjectForm";
 import { AchievementForm } from "@/components/admin/AchievementForm";
@@ -14,6 +14,7 @@ export default function Dashboard() {
     const [activeTab, setActiveTab] = useState<Tab>("projects");
     const [showProjectForm, setShowProjectForm] = useState(false);
     const [showAchievementForm, setShowAchievementForm] = useState(false);
+    const [editingItem, setEditingItem] = useState<any>(null);
     const [projects, setProjects] = useState<any[]>([]);
     const [achievements, setAchievements] = useState<any[]>([]);
     const router = useRouter();
@@ -106,7 +107,10 @@ export default function Dashboard() {
                         {activeTab === "projects" ? "Manage Projects" : "Manage Achievements"}
                     </h2>
                     <button
-                        onClick={() => activeTab === "projects" ? setShowProjectForm(true) : setShowAchievementForm(true)}
+                        onClick={() => {
+                            setEditingItem(null);
+                            activeTab === "projects" ? setShowProjectForm(true) : setShowAchievementForm(true);
+                        }}
                         className="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm font-medium hover:bg-primary/90 transition-colors"
                     >
                         <Plus className="h-4 w-4 mr-2" />
@@ -126,12 +130,23 @@ export default function Dashboard() {
                                         <h3 className="font-semibold">{project.title}</h3>
                                         <p className="text-sm text-muted-foreground">{project.category}</p>
                                     </div>
-                                    <button
-                                        onClick={() => handleDeleteProject(project.id)}
-                                        className="p-2 text-destructive hover:bg-destructive/10 rounded-md"
-                                    >
-                                        <Trash2 className="h-4 w-4" />
-                                    </button>
+                                    <div className="flex gap-2">
+                                        <button
+                                            onClick={() => {
+                                                setEditingItem(project);
+                                                setShowProjectForm(true);
+                                            }}
+                                            className="p-2 text-primary hover:bg-primary/10 rounded-md"
+                                        >
+                                            <Edit2 className="h-4 w-4" />
+                                        </button>
+                                        <button
+                                            onClick={() => handleDeleteProject(project.id)}
+                                            className="p-2 text-destructive hover:bg-destructive/10 rounded-md"
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </button>
+                                    </div>
                                 </div>
                             ))}
                         </div>
@@ -152,12 +167,23 @@ export default function Dashboard() {
                                         <h3 className="font-semibold">{achievement.title}</h3>
                                         <p className="text-sm text-muted-foreground">{achievement.type} - {new Date(achievement.date).toLocaleDateString()}</p>
                                     </div>
-                                    <button
-                                        onClick={() => handleDeleteAchievement(achievement.id)}
-                                        className="p-2 text-destructive hover:bg-destructive/10 rounded-md"
-                                    >
-                                        <Trash2 className="h-4 w-4" />
-                                    </button>
+                                    <div className="flex gap-2">
+                                        <button
+                                            onClick={() => {
+                                                setEditingItem(achievement);
+                                                setShowAchievementForm(true);
+                                            }}
+                                            className="p-2 text-primary hover:bg-primary/10 rounded-md"
+                                        >
+                                            <Edit2 className="h-4 w-4" />
+                                        </button>
+                                        <button
+                                            onClick={() => handleDeleteAchievement(achievement.id)}
+                                            className="p-2 text-destructive hover:bg-destructive/10 rounded-md"
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </button>
+                                    </div>
                                 </div>
                             ))}
                         </div>
@@ -171,15 +197,29 @@ export default function Dashboard() {
 
             {showProjectForm && (
                 <ProjectForm
-                    onClose={() => setShowProjectForm(false)}
-                    onSuccess={fetchProjects}
+                    onClose={() => {
+                        setShowProjectForm(false);
+                        setEditingItem(null);
+                    }}
+                    onSuccess={() => {
+                        fetchProjects();
+                        setEditingItem(null);
+                    }}
+                    initialData={editingItem}
                 />
             )}
 
             {showAchievementForm && (
                 <AchievementForm
-                    onClose={() => setShowAchievementForm(false)}
-                    onSuccess={fetchAchievements}
+                    onClose={() => {
+                        setShowAchievementForm(false);
+                        setEditingItem(null);
+                    }}
+                    onSuccess={() => {
+                        fetchAchievements();
+                        setEditingItem(null);
+                    }}
+                    initialData={editingItem}
                 />
             )}
         </div>

@@ -1,16 +1,18 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-    { name: "About", href: "#about" },
-    { name: "Skills", href: "#skills" },
-    { name: "Projects", href: "#projects" },
-    { name: "Achievements", href: "#achievements" },
-    { name: "Contact", href: "#contact" },
+    { name: "About", href: "/#about" },
+    { name: "Skills", href: "/#skills" },
+    { name: "Projects", href: "/#projects" },
+    { name: "Achievements", href: "/#achievements" },
+    { name: "Contact", href: "/#contact" },
+    { name: "Resume", href: "/resume" },
 ];
 
 export function Navbar() {
@@ -37,8 +39,22 @@ export function Navbar() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16">
                     <div className="flex-shrink-0 flex items-center">
-                        <Link href="/" className="text-xl font-bold tracking-tighter text-primary">
-                            Hizkia Jevon Chandra<span className="text-foreground"></span>
+                        <Link href="/" className="flex items-center gap-2">
+                            {/* Logo image - replace /logo.png with your actual logo file */}
+                            <Image
+                                src="/logo.png"
+                                alt="Hizkia Jevon Chandra"
+                                width={40}
+                                height={40}
+                                className="object-contain"
+                                onError={(e) => {
+                                    // Fallback to text if image not found
+                                    e.currentTarget.style.display = 'none';
+                                }}
+                            />
+                            <span className="text-xl font-bold tracking-tighter text-primary">
+                                Hizkia Jevon Chandra
+                            </span>
                         </Link>
                     </div>
 
